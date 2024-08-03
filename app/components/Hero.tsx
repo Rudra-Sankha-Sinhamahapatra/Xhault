@@ -3,9 +3,11 @@ import { signIn, useSession } from "next-auth/react"
 import { SecondaryButton } from "./Button"
 import googleImage from '../../public/google.ico'
 import { Button as PrimaryButton } from "./Button"
+import { useRouter } from "next/navigation"
 
 export const Hero = () => {
 const session = useSession();
+const router = useRouter();
 
     return <div> 
         <div className="text-5xl font-extrabold ">
@@ -20,7 +22,9 @@ const session = useSession();
     </div>
 
     <div className="pt-5 flex justify-center">
-      {session.data?.user?<PrimaryButton subject="Go to The Dashboard"/>:<SecondaryButton prefix={googleImage} subject="Login With Google" onClick={()=>{
+      {session.data?.user?<PrimaryButton subject="Go to The Dashboard" onClick={()=>{
+        router.push("/dashboard");
+      }}/>:<SecondaryButton prefix={googleImage} subject="Login With Google" onClick={()=>{
             signIn("google");
          }} />}
     </div>
