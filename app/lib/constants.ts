@@ -23,7 +23,7 @@ export async function getSupportedTokens() {
     }
     return SUPPORTED_TOKENS.map(s => ({
         ...s,
-        price: prices[s.name]?.price
+        price: prices[s.name]?.price || s.price
     }))
 
 }
