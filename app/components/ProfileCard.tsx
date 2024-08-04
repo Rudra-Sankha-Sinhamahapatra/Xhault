@@ -4,6 +4,7 @@ import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation";
 import { Button as PrimaryButton } from "./Button";
 import { useEffect, useState } from "react";
+import { useTokens } from "../api/hooks/useTokens";
 
 export default function ProfileCard ({publicKey}:{
     publicKey : string
@@ -58,6 +59,7 @@ function Assets ({publicKey}:{
 }) {
 
     const [copied,setCopied] = useState(false);
+    const {tokenBalances,loading} = useTokens(publicKey);
 
      useEffect(()=>{
       if(copied) {
@@ -70,12 +72,22 @@ function Assets ({publicKey}:{
       }
      },[copied])
 
+  if(loading) {
+    return <div>Loading ....</div>
+  }
+
+
     return <div className="text-slate-400 mt-4">
     Account Assets
     <br />
     <div className="flex justify-between">
-        <div>
-            
+        <div className="flex justify-center">
+        <div className="text-4xl font-bold text-black">
+            ${tokenBalances?.totalBalance}  
+        </div>
+        <div className="text-2xl font-semibold pt-2 pl-2">
+            USD
+        </div>
         </div>
         <div>
         <PrimaryButton
@@ -85,6 +97,9 @@ function Assets ({publicKey}:{
            setCopied(true)
           }}/>
           </div>
+          </div>
+          <div>
+            {JSON.stringify(tokenBalances?.tokens)}
           </div>
     </div>
 }
