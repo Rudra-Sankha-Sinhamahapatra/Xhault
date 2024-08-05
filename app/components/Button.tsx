@@ -33,5 +33,15 @@ export const TabButton = ({active,children,onClick}:{
     children:React.ReactNode;
     onClick: ()=> void
 }) => {
-    return <button type="button" className = {`text-white  ${active ? "bg-blue-700" : "bg-blue-400"} hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800`} onClick={onClick} >{children}</button>
+    return <button type="button" className = {`w-full text-white  ${active ? "bg-blue-800" : "bg-blue-300"} hover:bg-gray-800 focus:ring-1 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 outline-none`} onClick={onClick} >{children}</button>
+}
+
+
+export const PrimaryButton = ({children, onClick}: {
+    children: React.ReactNode,
+    onClick: () => void
+}) => {
+    return <button onClick={onClick} type="button" className="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2">
+        {children}
+    </button>
 }
