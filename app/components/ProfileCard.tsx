@@ -4,7 +4,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Button as PrimaryButton, TabButton } from "./Button";
 import { useEffect, useState } from "react";
-import { useTokens } from "../api/hooks/useTokens";
+import { TokenWithbalance, useTokens } from "../api/hooks/useTokens";
 import { TokenList } from "./TokenList";
 import { Swap } from "./Swap";
 
@@ -22,6 +22,7 @@ export default function ProfileCard({ publicKey }: { publicKey: string }) {
   const session = useSession();
   const router = useRouter();
   const [selectedTab, setSelectedTab] = useState<Tab>("tokens");
+  const { tokenBalances, loading } = useTokens(publicKey);
 
   if (session.status === "loading") {
     return <div>Loading ....</div>;
@@ -54,10 +55,14 @@ export default function ProfileCard({ publicKey }: { publicKey: string }) {
         </div>
 
         <div className={`${selectedTab === "tokens" ? "visible" : "hidden"}`}>
-          <Assets publicKey={publicKey} />
+          <Assets
+            tokenBalances={tokenBalances}
+            loading={loading}
+            publicKey={publicKey}
+          />
         </div>
         <div className={`${selectedTab === "swap" ? "visible" : "hidden"}`}>
-          <Swap/>
+          <Swap tokenBalances={tokenBalances} publicKey={publicKey} />
         </div>
       </div>
     </div>
@@ -76,9 +81,19 @@ function Greeting({ image, name }: { image: string; name: string }) {
   );
 }
 
-function Assets({ publicKey }: { publicKey: string }) {
+function Assets({
+  publicKey,
+  tokenBalances,
+  loading,
+}: {
+  publicKey: string;
+  tokenBalances: {
+    totalBalance: number;
+    tokens: TokenWithbalance[];
+  } | null;
+  loading: boolean;
+}) {
   const [copied, setCopied] = useState(false);
-  const { tokenBalances, loading } = useTokens(publicKey);
 
   useEffect(() => {
     if (copied) {

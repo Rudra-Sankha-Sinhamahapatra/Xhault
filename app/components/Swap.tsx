@@ -1,9 +1,16 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 import { SUPPORTED_TOKENS, TokenDetails } from "../lib/tokens";
+import { TokenWithbalance } from "../api/hooks/useTokens";
 
-export function Swap() {
+export function Swap({publicKey,tokenBalances}:{
+  publicKey : string;
+  tokenBalances : {
+    totalBalance : number;
+    tokens: TokenWithbalance[]
+  } | null
+}) {
   const [baseAsset, setBaseAsset] = useState(SUPPORTED_TOKENS[0]);
   const [quoteAsset, setQuoteAsset] = useState(SUPPORTED_TOKENS[1]);
 
@@ -16,8 +23,9 @@ export function Swap() {
         onSelect={(asset) => {
           setBaseAsset(asset);
         }}
+        subtitle= {<div className="text-slate-500 text-sm">Current Balance : {tokenBalances?.tokens.find(x=>x.name === baseAsset.name)?.balance} {baseAsset.name}</div>}
         selectedToken={baseAsset}
-        title={"You Pay"}
+        title={"You Pay:"}
         topBorderEnabled={true}
         bottomBorderEnabled={false}
       />
@@ -37,7 +45,7 @@ export function Swap() {
           setQuoteAsset(asset);
         }}
         selectedToken={quoteAsset}
-        title={"You Receive"}
+        title={"You Receive:"}
         topBorderEnabled={false}
         bottomBorderEnabled={true}
       />
@@ -49,22 +57,27 @@ function SwapInputRow({
   onSelect,
   selectedToken,
   title,
+  subtitle,
   topBorderEnabled,
   bottomBorderEnabled
 }: {
   onSelect: (asset: TokenDetails) => void;
   selectedToken: TokenDetails;
   title: string;
+  subtitle?: ReactNode;
   topBorderEnabled : boolean;
   bottomBorderEnabled : boolean;
 }) {
   return (
     <div className={`border flex justify-between p-4 ${topBorderEnabled?"rounded-t-xl":""} ${bottomBorderEnabled?"rounded-b-xl":""}`}>
       <div className="">
-        <div className="pl-4 mt-2">
+        <div className="pl-4 mt-2 font-semibold text-sm">
         {title}
         </div>
         <AssetSelector selectedToken={selectedToken} onSelect={onSelect} />
+        <div className="pl-4 mt-2">
+        {subtitle}
+        </div>
       </div>
     </div>
   );
