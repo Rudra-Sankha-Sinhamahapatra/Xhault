@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
-import { ReactNode, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { SUPPORTED_TOKENS, TokenDetails } from "../lib/tokens";
 import { TokenWithbalance } from "../api/hooks/useTokens";
 
@@ -13,6 +13,13 @@ export function Swap({publicKey,tokenBalances}:{
 }) {
   const [baseAsset, setBaseAsset] = useState(SUPPORTED_TOKENS[0]);
   const [quoteAsset, setQuoteAsset] = useState(SUPPORTED_TOKENS[1]);
+  const [baseAmount,setBaseAmount] = useState<string>("0");
+  const [quoteAmount,setQuoteAmount] = useState<string>("0");
+
+  useEffect(()=>{
+    if(!baseAmount) return;
+
+  },[baseAsset,baseAmount,quoteAsset]);
 
   return (
     <div className="p-12">
@@ -20,10 +27,14 @@ export function Swap({publicKey,tokenBalances}:{
             Swap Tokens
         </div>
       <SwapInputRow
+         amount={baseAmount}
+         onAmountChange={(value:string)=>{
+          setBaseAmount(value);
+         }}
         onSelect={(asset) => {
           setBaseAsset(asset);
         }}
-        subtitle= {<div className="text-slate-500 text-sm">Current Balance : {tokenBalances?.tokens.find(x=>x.name === baseAsset.name)?.balance} {baseAsset.name}</div>}
+        subtitle= {<div className="text-slate-500 text-sm w-60">Current Balance : {tokenBalances?.tokens.find(x=>x.name === baseAsset.name)?.balance} {baseAsset.name}</div>}
         selectedToken={baseAsset}
         title={"You Pay:"}
         topBorderEnabled={true}
@@ -41,6 +52,8 @@ export function Swap({publicKey,tokenBalances}:{
       </div>
 
       <SwapInputRow
+        amount={quoteAmount}
+        subtitle= {<div className="text-slate-500 text-sm w-60"></div>}
         onSelect={(asset) => {
           setQuoteAsset(asset);
         }}
@@ -49,7 +62,8 @@ export function Swap({publicKey,tokenBalances}:{
         topBorderEnabled={false}
         bottomBorderEnabled={true}
       />
-    </div>
+      </div>
+
   );
 }
 
@@ -57,6 +71,8 @@ function SwapInputRow({
   onSelect,
   selectedToken,
   title,
+  amount,
+  onAmountChange,
   subtitle,
   topBorderEnabled,
   bottomBorderEnabled
@@ -64,6 +80,8 @@ function SwapInputRow({
   onSelect: (asset: TokenDetails) => void;
   selectedToken: TokenDetails;
   title: string;
+  amount?:string;
+  onAmountChange?: (value:string) => void;
   subtitle?: ReactNode;
   topBorderEnabled : boolean;
   bottomBorderEnabled : boolean;
@@ -75,9 +93,18 @@ function SwapInputRow({
         {title}
         </div>
         <AssetSelector selectedToken={selectedToken} onSelect={onSelect} />
-        <div className="pl-4 mt-2">
+        <div className="pl-4 mt-2 w-fit">
         {subtitle}
         </div>
+      </div>
+      <div className="mt-7 flex ml-40">
+        <input 
+        type="text"
+       className="p-6 outline-none text-2xl"
+        value={amount}
+        onChange={(e)=>{
+         onAmountChange?.(e.target.value);
+        }}/>
       </div>
     </div>
   );
@@ -91,7 +118,7 @@ function AssetSelector({
   onSelect: (asset: TokenDetails) => void;
 }) {
   return (
-    <div>
+    <div className="w-24">
     <select
       onChange={(e) => {
         const selectedToken = SUPPORTED_TOKENS.find(
